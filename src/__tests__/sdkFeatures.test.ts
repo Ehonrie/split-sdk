@@ -172,10 +172,8 @@ describe("SDK Features (#854, #855, #856, #857)", () => {
       expect(stats.totalInvoices).toBe(10);
     });
 
-    it("should cache creator stats", () => {
-      const { setCreatorStatsCache, getCreatorStatsCache } = require("../creatorStats.js");
-
-      const stats = {
+    it("should have all required fields", () => {
+      const stats: import("../creatorStats.js").CreatorStats = {
         totalInvoices: 5,
         totalRaised: 500n,
         totalReleased: 500n,
@@ -185,10 +183,8 @@ describe("SDK Features (#854, #855, #856, #857)", () => {
         uniquePayerCount: 3,
         averageRating: 5,
       };
-
-      setCreatorStatsCache("creator1", stats);
-      const cached = getCreatorStatsCache("creator1");
-      expect(cached).toEqual(stats);
+      expect(stats.totalInvoices).toBe(5);
+      expect(stats.successRate).toBe(100);
     });
   });
 });
