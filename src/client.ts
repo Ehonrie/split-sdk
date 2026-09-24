@@ -1198,6 +1198,11 @@ export class StellarSplitClient extends TypedEventEmitter<SplitClientEventMap> {
         });
       this._instrumentOtel();
     }
+
+    this._pluginRegistry.setClientContext({
+      on: (event, handler) => this.on(event as keyof SplitClientEventMap, handler as never),
+      off: (event, handler) => this.off(event as keyof SplitClientEventMap, handler as never),
+    });
   }
 
   /**
@@ -2072,13 +2077,19 @@ export class StellarSplitClient extends TypedEventEmitter<SplitClientEventMap> {
     plugin.install?.(this);
   }
 
-  /** Register a middleware plugin (interceptor-style).
-   * @param params - The parameters for the method.
-   * @returns The result of the method.
-   * @throws {Error} If the method fails.
+  /**
+   * Register a plugin with fluent API support.
+   * Plugins can extend the client with custom methods, intercept RPC calls,
+   * and subscribe to events.
+   *
+   * @param plugin - The plugin to install.
+   * @param options - Optional plugin configuration.
+   * @returns The client instance for method chaining.
+   * @throws {PluginAlreadyRegisteredError} if a plugin with the same name exists.
    */
-  use(plugin: SdkPlugin): void {
-    this._pluginRegistry.use(plugin);
+  use(plugin: SdkPlugin, options?: Record<string, unknown>): this {
+    this._pluginRegistry.use(plugin, options);
+    return this;
   }
 
   /** Deregister a middleware plugin by name.
