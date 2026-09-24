@@ -8819,7 +8819,9 @@ export class StellarSplitClient extends TypedEventEmitter<SplitClientEventMap> {
     const cached = getCreatorStatsCache(creator);
     if (cached) return cached;
 
-    const invoices = await this.getInvoices({ creator });
+    const result = await this.getInvoicesByCreator(creator);
+    const invoices = result.invoices || [];
+
     const totalRaised = invoices.reduce((sum, inv) => sum + inv.amount, 0n);
     const totalReleased = invoices.reduce((sum, inv) => {
       if (inv.status === "Released") return sum + inv.amount;
